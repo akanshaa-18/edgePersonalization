@@ -33,7 +33,7 @@ addEventListener("fetch", (event) => {
 	  console.log("Extracted path:", path);
   
 	  // Construct the target URL
-	  const targetUrl = `https://main--cc--adobecom.aem.page${path}`;
+	  const targetUrl = url.origin + url.pathname;
 	  console.log("Target URL:", targetUrl);
   
 	  if (shouldProcessRequest(url)) {
@@ -42,7 +42,7 @@ addEventListener("fetch", (event) => {
   
 	  // Fetch the original page from the target URL
 	  const response = await fetch(targetUrl, {
-		headers: request.headers, // Forward original headers
+		headers: {...request.headers, "Authorization": "token hlxtst_eyJhbGciOiJSUzI1NiJ9.eyJhdWQiOiJjYy0tYWRvYmVjb20uYWVtLnBhZ2UiLCJzdWIiOiJtYWFncmF3YWxAYWRvYmUuY29tIiwiZXhwIjoxNzQyNDU4NTkxfQ.pXlvGap3mTOrfh7JI3b0pWMyC_hOFQxsRhrVexMPLqvZXTvIdtEsdmBz7fJ97ZsL-824VXW5AcvOplPKPpp9ciupU_lKrcvC9UDuNsccudfZq1mesDsDsLYBphMoUluEqvdpJ8CrPjM9dAhUreCLgNaFGYFJseOd4t5aTZI7THrm_lyfJ-jNaeeL4k2Do7m1-1TbdxMvDYUTqW_z70ZC_Vx_4OwrkUEpM5qMEWtN_NbY19vj1w-A2ZEsWhw8ZoPaP6H4CWHWbckmdxjTWsPhfTt9LiWbsAsxOeY7EhWwRFqzWRCoPVb92cHQxUifV1Mm_3l3rCyLjzRzgwo6phXEpA"}, // Forward original headers
 	  });
   
 	  // Return the response
@@ -143,7 +143,7 @@ addEventListener("fetch", (event) => {
   async function fetchOriginalPage(request, url) {
 	const originRequest = new Request(url.toString(), {
 	  method: "GET",
-	  headers: request.headers,
+	  headers: {...request.headers, "Authorization": "token hlxtst_eyJhbGciOiJSUzI1NiJ9.eyJhdWQiOiJjYy0tYWRvYmVjb20uYWVtLnBhZ2UiLCJzdWIiOiJtYWFncmF3YWxAYWRvYmUuY29tIiwiZXhwIjoxNzQyNDU4NTkxfQ.pXlvGap3mTOrfh7JI3b0pWMyC_hOFQxsRhrVexMPLqvZXTvIdtEsdmBz7fJ97ZsL-824VXW5AcvOplPKPpp9ciupU_lKrcvC9UDuNsccudfZq1mesDsDsLYBphMoUluEqvdpJ8CrPjM9dAhUreCLgNaFGYFJseOd4t5aTZI7THrm_lyfJ-jNaeeL4k2Do7m1-1TbdxMvDYUTqW_z70ZC_Vx_4OwrkUEpM5qMEWtN_NbY19vj1w-A2ZEsWhw8ZoPaP6H4CWHWbckmdxjTWsPhfTt9LiWbsAsxOeY7EhWwRFqzWRCoPVb92cHQxUifV1Mm_3l3rCyLjzRzgwo6phXEpA"},
 	  redirect: "follow",
 	})
 	
@@ -376,115 +376,163 @@ addEventListener("fetch", (event) => {
 	  .map(([key, value]) => ({ key, value }))
 	
 	return {
-	  "event": {
-		"xdm": {
-		  ...updatedContext,
-		  "identityMap": identityMap,
-		  "web": {
-			"webPageDetails": {
-			  "URL": url.href,
-			  "siteSection": url.hostname,
-			  "server": url.hostname,
-			  "isErrorPage": false,
-			  "isHomePage": url.pathname === "/",
-			  "name": pageName,
-			  "pageViews": {
-				"value": 0
-			  }
+		"event": {
+			"xdm": {
+				"device": {
+					"screenHeight": 1117,
+					"screenWidth": 1728,
+					"screenOrientation": "landscape"
+				},
+				"environment": {
+					"type": "browser",
+					"browserDetails": {
+						"viewportWidth": 1728,
+						"viewportHeight": 275
+					}
+				},
+				"placeContext": {
+					"localTime": "2025-03-14T06:11:32.623Z",
+					"localTimezoneOffset": -330
+				},
+				"identityMap": {
+					"ECID": [
+						{
+							"id": "89199314073073960203854048274649182064",
+							"authenticatedState": "ambiguous",
+							"primary": true
+						}
+					]
+				},
+				"web": {
+					"webPageDetails": {
+						"URL": "https://www.adobe.com/products/photoshop.html?hybrid-pers=off&target=on",
+						"siteSection": "www.adobe.com",
+						"server": "www.adobe.com",
+						"isErrorPage": false,
+						"isHomePage": false,
+						"name": "adobe.com:products:photoshop",
+						"pageViews": {
+							"value": 0
+						}
+					},
+					"webInteraction": {
+						"name": "Martech-API",
+						"type": "other",
+						"linkClicks": {
+							"value": 1
+						}
+					},
+					"webReferrer": {
+						"URL": ""
+					}
+				},
+				"timestamp": "2025-03-14T06:11:32.624Z",
+				"eventType": "decisioning.propositionFetch"
 			},
-			webInteraction: {
-				name: 'Martech-API',
-				type: 'other',
-				linkClicks: { value: 1 },
-			  },
-			"webReferrer": {
-			  "URL": request.headers.get("Referer") || ""
+			"data": {
+				"__adobe": {
+					"target": {
+						"is404": false,
+						"authState": "loggedOut",
+						"hitType": "propositionFetch",
+						"isMilo": true,
+						"adobeLocale": "en-US",
+						"hasGnav": true
+					}
+				},
+				"_adobe_corpnew": {
+					"digitalData": {
+						"page": {
+							"pageInfo": {
+								"language": "en-US"
+							}
+						},
+						"diagnostic": {
+							"franklin": {
+								"implementation": "milo"
+							}
+						},
+						"previousPage": {
+							"pageInfo": {
+								"pageName": "adobe.com:products:photoshop"
+							}
+						},
+						"primaryUser": {
+							"primaryProfile": {
+								"profileInfo": {
+									"authState": "loggedOut",
+									"returningStatus": "New"
+								}
+							}
+						}
+					}
+				},
+				"marketingtech": {
+					"adobe": {
+						"alloy": {
+							"approach": "martech-API",
+							"edgeConfigIdLaunch": "913eac4d-900b-45e8-9ee7-306216765cd2",
+							"edgeConfigId": "913eac4d-900b-45e8-9ee7-306216765cd2"
+						}
+					}
+				}
 			}
-		  },
-		  "timestamp": new Date().toISOString(),
-		  "eventType": "decisioning.propositionFetch",
 		},
-		"data": {
-		  "__adobe": {
+		"query": {
+			"identity": {
+				"fetch": [
+					"ECID"
+				]
+			},
+			"personalization": {
+				"schemas": [
+					"https://ns.adobe.com/personalization/default-content-item",
+					"https://ns.adobe.com/personalization/html-content-item",
+					"https://ns.adobe.com/personalization/json-content-item",
+					"https://ns.adobe.com/personalization/redirect-item",
+					"https://ns.adobe.com/personalization/ruleset-item",
+					"https://ns.adobe.com/personalization/message/in-app",
+					"https://ns.adobe.com/personalization/message/content-card",
+					"https://ns.adobe.com/personalization/dom-action"
+				],
+				"surfaces": [
+					"web://www.adobe.com/products/photoshop.html"
+				],
+				"decisionScopes": [
+					"__view__"
+				]
+			}
+		},
+		"meta": {
 			"target": {
-			  "is404": false,
-			  "authState": "loggedOut",
-			  "hitType": "propositionFetch",
-			  "isMilo": true,
-			  "adobeLocale": locale.ietf,
-			  "hasGnav": true
+				"migration": true
+			},
+			"configOverrides": {
+				"com_adobe_analytics": {
+					"reportSuites": [
+						"adbadobenonacdcprod",
+						"adbadobeprototype"
+					]
+				},
+				"com_adobe_target": {
+					"propertyToken": "4db35ee5-63ad-59f6-cec6-82ef8863b22d"
+				}
+			},
+			"state": {
+				"domain": "adobe.com",
+				"cookiesEnabled": true,
+				"entries": [
+					{
+						"key": "kndctr_9E1005A551ED61CA0A490D45_AdobeOrg_cluster",
+						"value": "jpn3"
+					},
+					{
+						"key": "kndctr_9E1005A551ED61CA0A490D45_AdobeOrg_identity",
+						"value": "CiY4OTE5OTMxNDA3MzA3Mzk2MDIwMzg1NDA0ODI3NDY0OTE4MjA2NFIRCOzxlJrZMhgBKgRKUE4zMALwAezxlJrZMg%3D%3D"
+					}
+				]
 			}
-		  },
-		  "_adobe_corpnew": {
-			marketingtech: { adobe: { alloy: { approach: 'martech-API' } } },
-			"digitalData": {
-			  "page": {
-				"pageInfo": {
-				  "language": locale.ietf,
-				}
-			  },
-			  "diagnostic": {
-				"franklin": {
-				  "implementation": "milo"
-				}
-			  },
-			  "previousPage": {
-				"pageInfo": {
-				  "pageName": prevPageName || pageName
-				}
-			  },
-			  "primaryUser": {
-				"primaryProfile": {
-				  "profileInfo": {
-					"authState": "loggedOut",
-					"returningStatus": "Repeat",
-				  }
-				}
-			  },
-			}
-		  },
 		}
-	  },
-	  "query": {
-		"identity": {
-		  "fetch": [
-			"ECID"
-		  ]
-		},
-		"personalization": {
-		  "schemas": [
-			"https://ns.adobe.com/personalization/default-content-item",
-			"https://ns.adobe.com/personalization/html-content-item",
-			"https://ns.adobe.com/personalization/json-content-item",
-			"https://ns.adobe.com/personalization/redirect-item",
-			"https://ns.adobe.com/personalization/ruleset-item",
-			"https://ns.adobe.com/personalization/message/in-app",
-			"https://ns.adobe.com/personalization/message/content-card",
-			"https://ns.adobe.com/personalization/dom-action"
-		  ],
-		  "decisionScopes": [
-			"__view__"
-		  ]
-		}
-	  },
-	  "meta": {
-		"target": {
-		  "migration": true
-		},
-		"configOverrides": {
-		  "com_adobe_analytics": {
-			"reportSuites": REPORT_SUITES_ID
-		  },
-		  "com_adobe_target": {
-			"propertyToken": AT_PROPERTY_VAL
-		  }
-		},
-		"state": {
-		  "domain": url.hostname,
-		  "cookiesEnabled": true,
-		  "entries": stateEntries
-		}
-	  }
 	}
   }
   

@@ -9,7 +9,18 @@
 	"compatibility_date": "2025-03-11",
 	"observability": {
 		"enabled": true
-	}
+	},
+	// https://main--cc--adobecom.aem.page/drafts/akansha/photoshop
+	"routes": [
+		{
+			"pattern": "main--cc--adobecom.aem.page/*",
+			"zone_name": "main--cc--adobecom.aem.page"
+		},
+		{
+			"pattern": "subdomain.example.com/*",
+			"zone_id": "<YOUR_ZONE_ID>"
+		}
+	]
 	/**
 	 * Smart Placement
 	 * Docs: https://developers.cloudflare.com/workers/configuration/smart-placement/#smart-placement
