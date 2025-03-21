@@ -1,15 +1,7 @@
 
-// export default {
-// 	async fetch(request) {
-// 	  return new Response("Hello from Cloudflare Worker!", {
-// 		headers: { "Content-Type": "text/plain" },
-// 	  });
-// 	},
-//   };
-
 // Cloudflare Worker for Edge Personalization with HTMLRewriter
 addEventListener("fetch", (event) => {
-	console.log("Received request:", event.request.url);
+	// console.log("Received request:", event.request.url);
 	event.respondWith(handleRequest(event.request));
   });
   
@@ -27,22 +19,16 @@ addEventListener("fetch", (event) => {
 	  if (request.method === "OPTIONS") {
 		return handleOptions(request);
 	  }
-  
-	  // Extract the path from the request URL
-	  const path = url.pathname + url.search; // Include query parameters
-	  console.log("Extracted path:", path);
-  
-	  // Construct the target URL
+	  // const path = url.pathname + url.search; // Include query parameters
 	  const targetUrl = url.origin + url.pathname;
-	  console.log("Target URL:", targetUrl);
   
 	  if (shouldProcessRequest(url)) {
+		console.log("Handle EDGE PERS", await handleEdgePersonalization(request, url))
 		return handleEdgePersonalization(request, url);
 	  }
-  
-	  // Fetch the original page from the target URL
+
 	  const response = await fetch(targetUrl, {
-		headers: {...request.headers, "Authorization": "token hlxtst_eyJhbGciOiJSUzI1NiJ9.eyJhdWQiOiJjYy0tYWRvYmVjb20uYWVtLnBhZ2UiLCJzdWIiOiJtYWFncmF3YWxAYWRvYmUuY29tIiwiZXhwIjoxNzQyNDU4NTkxfQ.pXlvGap3mTOrfh7JI3b0pWMyC_hOFQxsRhrVexMPLqvZXTvIdtEsdmBz7fJ97ZsL-824VXW5AcvOplPKPpp9ciupU_lKrcvC9UDuNsccudfZq1mesDsDsLYBphMoUluEqvdpJ8CrPjM9dAhUreCLgNaFGYFJseOd4t5aTZI7THrm_lyfJ-jNaeeL4k2Do7m1-1TbdxMvDYUTqW_z70ZC_Vx_4OwrkUEpM5qMEWtN_NbY19vj1w-A2ZEsWhw8ZoPaP6H4CWHWbckmdxjTWsPhfTt9LiWbsAsxOeY7EhWwRFqzWRCoPVb92cHQxUifV1Mm_3l3rCyLjzRzgwo6phXEpA"}, // Forward original headers
+		headers: {...request.headers, "Authorization": "token hlxtst_eyJhbGciOiJSUzI1NiJ9.eyJhdWQiOiJjYy0tYWRvYmVjb20uYWVtLnBhZ2UiLCJzdWIiOiJtYWFncmF3YWxAYWRvYmUuY29tIiwiZXhwIjoxNzQyNjM2MjI4fQ.WhLzJ9pW9ArZIP3bgriYtqYix4vBtIW3y9hvLmBB4yQNub9aCN2ZyqYYTPxq9ERUP7APK0daa29l5kUfIz3r2DLiI_JpqIH56f2mMA15501uXl8qDYoE4UuSDwIgXDP9rZjXsuCfdNngotVPx6oCIGA94vpW5ax7J1DHb2Zt9g10qANgenfnMEeXxfvTRlndMqmRKrdftFCJfkJWK00y1qEzCuGuGTZMb1ziXp93wJLByD3MM6idThOlcbzVCxGFBAj4Ou8l-QyauF0uY99PMI0xqh0iVzKPCug5je8tqN48y8x0zbVmakFPVBqY2NUjVP4eTGsZFbli8DPIHAySOQ"}, // Forward original headers
 	  });
   
 	  // Return the response
@@ -62,7 +48,7 @@ addEventListener("fetch", (event) => {
 
 //   // Cloudflare Worker for Edge Personalization with HTMLRewriter
 // addEventListener("fetch", (event) => {
-// 	console.log("Received request:", event.request.url);
+// 	//console.log("Received request:", event.request.url);
 // 	event.respondWith(handleRequest(event.request))
 //   })
   
@@ -103,24 +89,302 @@ addEventListener("fetch", (event) => {
 		   url.searchParams.get("perf_test") === "true"
   }
 
-  async function handleEdgePersonalization(request, url) {
+  
+	async function handleEdgePersonalization(request, url) {
 	try {
 	  const locale = determineLocale(request, url)
 	  const env = determineEnvironment(url)
+
+		// url.href
+		const targetUrl = 'https://main--cc--adobecom.aem.page/drafts/akansha/photoshop?target=on&edge-pers=on'
+
+		const originalResponse = await fetch(targetUrl, {
+		headers: {...request.headers, "Authorization": "token hlxtst_eyJhbGciOiJSUzI1NiJ9.eyJhdWQiOiJjYy0tYWRvYmVjb20uYWVtLnBhZ2UiLCJzdWIiOiJtYWFncmF3YWxAYWRvYmUuY29tIiwiZXhwIjoxNzQyNjM2MjI4fQ.WhLzJ9pW9ArZIP3bgriYtqYix4vBtIW3y9hvLmBB4yQNub9aCN2ZyqYYTPxq9ERUP7APK0daa29l5kUfIz3r2DLiI_JpqIH56f2mMA15501uXl8qDYoE4UuSDwIgXDP9rZjXsuCfdNngotVPx6oCIGA94vpW5ax7J1DHb2Zt9g10qANgenfnMEeXxfvTRlndMqmRKrdftFCJfkJWK00y1qEzCuGuGTZMb1ziXp93wJLByD3MM6idThOlcbzVCxGFBAj4Ou8l-QyauF0uY99PMI0xqh0iVzKPCug5je8tqN48y8x0zbVmakFPVBqY2NUjVP4eTGsZFbli8DPIHAySOQ"}, // Forward original headers
+		});
 	  
-	  const originalResponse = await fetchOriginalPage(request, url)
-	  
-	  const contentType = originalResponse.headers.get("content-type") || ""
+	  const contentType = originalResponse.headers.get("content-type") || "text/html"
+	  console.log("Content Type:", contentType);
 	  if (!contentType.includes("text/html")) {
 		return originalResponse
 	  }
 	  
-	  const targetData = await fetchPersonalizationData({
-		locale,
-		env,
-		request,
-		url,
-	  })
+	  // const targetData = await fetchPersonalizationData({
+		// locale,
+		// env,
+		// request,
+		// url,
+	  // })
+
+		const targetData = {
+			"requestId": "61791a37-4589-4c50-a6de-13a244540df2",
+			"handle": [
+					{
+							"payload": [
+									{
+											"id": "45929402172259229860503176295453585215",
+											"namespace": {
+													"code": "ECID"
+											}
+									}
+							],
+							"type": "identity:result"
+					},
+					{
+							"payload": [],
+							"type": "activation:pull",
+							"eventIndex": 0
+					},
+					{
+							"payload": [],
+							"type": "personalization:decisions",
+							"eventIndex": 0
+					},
+					{
+							"payload": [
+									{
+											"type": "cookie",
+											"spec": {
+													"name": "fltk",
+													"value": "segID=13330890",
+													"domain": "adobe.com",
+													"ttlDays": 30
+											}
+									},
+									{
+											"type": "cookie",
+											"spec": {
+													"name": "sparkAudienceManager",
+													"value": "Photo:Pro",
+													"domain": "spark.adobe.com",
+													"ttlDays": 30
+											}
+									}
+							],
+							"type": "activation:push",
+							"eventIndex": 0
+					},
+					{
+							"payload": [
+									{
+											"type": "url",
+											"id": 3262437,
+											"spec": {
+													"url": "https://googleads.g.doubleclick.net/pagead/viewthroughconversion/1047257100/?guid=ON&script=0&data=aam=1520098;aam=441790;aam=438839;aam=24141524;aam=24592725;aam=25361606;aam=25361608;aam=25749579;aam=25866994;aam=25902577;aam=25953299;aam=26150121;aam=26318177;aam=22920296;aam=26244584;aam=26615051&ad_personalization=granted&ad_user_data=granted",
+													"hideReferrer": false,
+													"ttlMinutes": 10080
+											}
+									},
+									{
+											"type": "url",
+											"id": 3870180,
+											"spec": {
+													"url": "https://googleads.g.doubleclick.net/pagead/viewthroughconversion/864947348/?guid=ON&script=0&data=aam=16194569&ad_personalization=granted&ad_user_data=granted",
+													"hideReferrer": false,
+													"ttlMinutes": 10080
+											}
+									},
+									{
+											"type": "url",
+											"id": 5067799,
+											"spec": {
+													"url": "https://googleads.g.doubleclick.net/pagead/viewthroughconversion/792267474/?value=0&guid=ON&script=0&data=aam=2716002&ad_personalization=granted&ad_user_data=granted",
+													"hideReferrer": true,
+													"ttlMinutes": 10080
+											}
+									},
+									{
+											"type": "url",
+											"id": 5597001,
+											"spec": {
+													"url": "https://googleads.g.doubleclick.net/pagead/viewthroughconversion/987390658/?value=0&guid=ON&script=0&data=aam=24576221;aam=24141524;aam=25361606;aam=25361608;aam=25749579;aam=25866994;aam=25902577;aam=25953299;aam=2716002;aam=26150121&ad_personalization=granted&ad_user_data=granted",
+													"hideReferrer": true,
+													"ttlMinutes": 10080
+											}
+									}
+							],
+							"type": "activation:push",
+							"eventIndex": 0
+					},
+					{
+							"payload": [
+									{
+											"id": "AT:eyJhY3Rpdml0eUlkIjoiMTczNTk5OSIsImV4cGVyaWVuY2VJZCI6IjAifQ==",
+											"scope": "__view__",
+											"scopeDetails": {
+													"decisionProvider": "TGT",
+													"activity": {
+															"id": "1735999"
+													},
+													"experience": {
+															"id": "0"
+													},
+													"strategies": [
+															{
+																	"step": "entry",
+																	"trafficType": "0"
+															},
+															{
+																	"step": "display",
+																	"trafficType": "0"
+															}
+													],
+													"correlationID": "1735999:0:0"
+											},
+											"items": [
+													{
+															"id": "1004826",
+															"schema": "https://ns.adobe.com/personalization/json-content-item",
+															"meta": {
+																	"experience.id": "0",
+																	"activity.name": "Test Campaign- 1",
+																	"activity.id": "1735999",
+																	"option.name": "Offer2",
+																	"experience.name": "var1",
+																	"option.id": "2",
+																	"profile.categoryAffinity": "Experience Manager as a Cloud Service",
+																	"profile.exlLastProductFeature": "[\"Edge Delivery Services\"]",
+																	"profile.categoryFavorite": "Experience Manager as a Cloud Service",
+																	"offer.name": "/performance_testactivity2-i/experiences/0/pages/0/zones/0/1731566489068",
+																	"profile.exlLastPageWithProductFeature": "b8240a05-091e-46ba-b0e7-d04737bd63e3",
+																	"profile.categoryAffinities": [
+																			"Experience Manager as a Cloud Service",
+																			"Experience Manager",
+																			"Data Collection"
+																	],
+																	"offer.id": "1004826",
+																	"profile.twentygroups": "Group9of20"
+															},
+															"data": {
+																	"id": "1004826",
+																	"format": "application/json",
+																	"content": {
+																			"manifestLocation": "https://www.adobe.com/cc-shared/fragments/tests/2025/q1/test-campaign1/test-campaign1.json",
+																			"manifestContent": {
+																					"placeholders": {
+																							"total": 0,
+																							"offset": 0,
+																							"limit": 0,
+																							"data": [],
+																							"columns": [
+																									"key",
+																									"value"
+																							]
+																					},
+																					"info": {
+																							"total": 3,
+																							"offset": 0,
+																							"limit": 3,
+																							"data": [
+																									{
+																											"key": "manifest-type",
+																											"value": "Test"
+																									},
+																									{
+																											"key": "manifest-override-name",
+																											"value": ""
+																									},
+																									{
+																											"key": "manifest-execution-order",
+																											"value": "Normal"
+																									}
+																							],
+																							"columns": [
+																									"key",
+																									"value"
+																							]
+																					},
+																					"experiences": {
+																							"total": 1,
+																							"offset": 0,
+																							"limit": 1,
+																							"data": [
+																									{
+																											"action": "replace",
+																											"selector": "any-marquee h1",
+																											"page filter (optional)": "",
+																											"target-var1": "Test Campaign- Milo"
+																									}
+																							],
+																							"columns": [
+																									"action",
+																									"selector",
+																									"page filter (optional)",
+																									"target-var1"
+																							]
+																					},
+																					":version": 3,
+																					":names": [
+																							"placeholders",
+																							"info",
+																							"experiences"
+																					],
+																					":type": "multi-sheet"
+																			}
+																	}
+															}
+													}
+											]
+									}
+							],
+							"type": "personalization:decisions",
+							"eventIndex": 0
+					},
+					{
+							"payload": [
+									{
+											"scope": "Target",
+											"hint": "41",
+											"ttlSeconds": 1800
+									},
+									{
+											"scope": "AAM",
+											"hint": "12",
+											"ttlSeconds": 1800
+									},
+									{
+											"scope": "EdgeNetwork",
+											"hint": "ind1",
+											"ttlSeconds": 1800
+									}
+							],
+							"type": "locationHint:result"
+					},
+					{
+							"payload": [
+									{
+											"key": "kndctr_9E1005A551ED61CA0A490D45_AdobeOrg_cluster",
+											"value": "ind1",
+											"maxAge": 1800,
+											"attrs": {
+													"SameSite": "None"
+											}
+									}
+							],
+							"type": "state:store"
+					},
+					{
+							"payload": [
+									{
+											"key": "mbox",
+											"value": "session#45929402172259229860503176295453585215-mamopJ#1742477017|PC#c14750358b524a23925ee0850d0f6859.41_0#1804233656",
+											"maxAge": 63244800,
+											"attrs": {
+													"SameSite": "None"
+											}
+									},
+									{
+											"key": "mboxEdgeCluster",
+											"value": "41",
+											"maxAge": 1800,
+											"attrs": {
+													"SameSite": "None"
+											}
+									}
+							],
+							"type": "state:store"
+					}
+			]
+	}
 	  
 	  const processedData = processPersonalizationData(targetData)
 	  
@@ -143,9 +407,13 @@ addEventListener("fetch", (event) => {
   async function fetchOriginalPage(request, url) {
 	const originRequest = new Request(url.toString(), {
 	  method: "GET",
-	  headers: {...request.headers, "Authorization": "token hlxtst_eyJhbGciOiJSUzI1NiJ9.eyJhdWQiOiJjYy0tYWRvYmVjb20uYWVtLnBhZ2UiLCJzdWIiOiJtYWFncmF3YWxAYWRvYmUuY29tIiwiZXhwIjoxNzQyNDU4NTkxfQ.pXlvGap3mTOrfh7JI3b0pWMyC_hOFQxsRhrVexMPLqvZXTvIdtEsdmBz7fJ97ZsL-824VXW5AcvOplPKPpp9ciupU_lKrcvC9UDuNsccudfZq1mesDsDsLYBphMoUluEqvdpJ8CrPjM9dAhUreCLgNaFGYFJseOd4t5aTZI7THrm_lyfJ-jNaeeL4k2Do7m1-1TbdxMvDYUTqW_z70ZC_Vx_4OwrkUEpM5qMEWtN_NbY19vj1w-A2ZEsWhw8ZoPaP6H4CWHWbckmdxjTWsPhfTt9LiWbsAsxOeY7EhWwRFqzWRCoPVb92cHQxUifV1Mm_3l3rCyLjzRzgwo6phXEpA"},
+	  headers: {...request.headers, "Authorization": "token hlxtst_eyJhbGciOiJSUzI1NiJ9.eyJhdWQiOiJjYy0tYWRvYmVjb20uYWVtLnBhZ2UiLCJzdWIiOiJtYWFncmF3YWxAYWRvYmUuY29tIiwiZXhwIjoxNzQyNjM2MjI4fQ.WhLzJ9pW9ArZIP3bgriYtqYix4vBtIW3y9hvLmBB4yQNub9aCN2ZyqYYTPxq9ERUP7APK0daa29l5kUfIz3r2DLiI_JpqIH56f2mMA15501uXl8qDYoE4UuSDwIgXDP9rZjXsuCfdNngotVPx6oCIGA94vpW5ax7J1DHb2Zt9g10qANgenfnMEeXxfvTRlndMqmRKrdftFCJfkJWK00y1qEzCuGuGTZMb1ziXp93wJLByD3MM6idThOlcbzVCxGFBAj4Ou8l-QyauF0uY99PMI0xqh0iVzKPCug5je8tqN48y8x0zbVmakFPVBqY2NUjVP4eTGsZFbli8DPIHAySOQ", "content-type": "text/html"},
 	  redirect: "follow",
 	})
+
+	// const response = await fetch((url.href), {
+	// 	headers: {...request.headers, "Authorization": "token hlxtst_eyJhbGciOiJSUzI1NiJ9.eyJhdWQiOiJjYy0tYWRvYmVjb20uYWVtLnBhZ2UiLCJzdWIiOiJtYWFncmF3YWxAYWRvYmUuY29tIiwiZXhwIjoxNzQyNjM2MjI4fQ.WhLzJ9pW9ArZIP3bgriYtqYix4vBtIW3y9hvLmBB4yQNub9aCN2ZyqYYTPxq9ERUP7APK0daa29l5kUfIz3r2DLiI_JpqIH56f2mMA15501uXl8qDYoE4UuSDwIgXDP9rZjXsuCfdNngotVPx6oCIGA94vpW5ax7J1DHb2Zt9g10qANgenfnMEeXxfvTRlndMqmRKrdftFCJfkJWK00y1qEzCuGuGTZMb1ziXp93wJLByD3MM6idThOlcbzVCxGFBAj4Ou8l-QyauF0uY99PMI0xqh0iVzKPCug5je8tqN48y8x0zbVmakFPVBqY2NUjVP4eTGsZFbli8DPIHAySOQ",  "content-type": "text/html"}, // Forward original headers
+	// 	});
 	
 	const response = await fetch(originRequest)
 	
@@ -153,7 +421,8 @@ addEventListener("fetch", (event) => {
 	Object.keys(corsHeaders).forEach(key => {
 	  newHeaders.set(key, corsHeaders[key])
 	})
-	
+	console.log("New Headers:", newHeaders);
+
 	return new Response(response.body, {
 	  status: response.status,
 	  statusText: response.statusText,
@@ -314,7 +583,7 @@ addEventListener("fetch", (event) => {
 		method: "POST",
 		body: JSON.stringify(requestBody),
 	  })
-	  console.log("Target Response",targetResp)
+	  console.log("Target Response", await targetResp.json())
 	  
 	  if (!targetResp.ok) {
 		throw new Error(`Failed to fetch interact call: ${targetResp.status} ${targetResp.statusText}`)
@@ -565,11 +834,17 @@ addEventListener("fetch", (event) => {
   
 	return "4db35ee5-63ad-59f6-cec6-82ef8863b22d" // Default US property
   }
+
+	const getPayloadsByType = (data, type) => data?.handle?.filter((d) => d.type === type)
+  .map((d) => d.payload)
+  .reduce((acc, curr) => [...acc, ...curr], []);
   
   // Process personalization data from Adobe Target response
   function processPersonalizationData(targetData) {
 	// Extract personalization decisions
-	const propositions = targetData?.handle?.find(d => d.type === "personalization:decisions")?.payload || []
+	const propositions = getPayloadsByType(targetData, 'personalization:decisions');
+	
+	console.log("Propositions:", propositions);
 	
 	if (propositions.length === 0) {
 	  console.log("No propositions found in Target response")
@@ -678,7 +953,7 @@ addEventListener("fetch", (event) => {
 		  "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Safari/537.36",
 		}
 	  })
-	  
+	  console.log("Fragment Response:", response.text());
 	  if (!response.ok) {
 		throw new Error(`Failed to fetch fragment: ${response.status} ${response.statusText}`)
 	  }
@@ -689,6 +964,47 @@ addEventListener("fetch", (event) => {
 	  return `<!-- Error loading fragment ${fragmentPath} -->`
 	}
   }
+
+	//////// pers.js
+	function getModifiers(selector) {
+		let sel = selector;
+		const modifiers = [];
+		const flags = sel.split(/\s+#_/);
+		if (flags.length) {
+			sel = flags.shift();
+			flags.forEach((flag) => {
+				flag.split(/_|#_/).forEach((mod) => modifiers.push(mod.toLowerCase().trim()));
+			});
+		}
+		return { sel, modifiers };
+	}
+	export function modifyNonFragmentSelector(selector, action) {
+		const { sel, modifiers } = getModifiers(selector);
+	
+		let modifiedSelector = sel
+			.split('>').join(' > ')
+			.split(',').join(' , ')
+			.replaceAll(/main\s*>?\s*(section\d*)/gi, '$1')
+			.split(/\s+/)
+			.map(modifySelectorTerm)
+			.join(' ')
+			.trim();
+	
+		let attribute;
+	
+		if (action === COMMANDS_KEYS.updateAttribute) {
+			const string = modifiedSelector.split(' ').pop();
+			attribute = string.replace('.', '');
+			modifiedSelector = modifiedSelector.replace(string, '').trim();
+		}
+	
+		return {
+			modifiedSelector,
+			modifiers,
+			attribute,
+		};
+	}
+	////////// pers.js
   
   // Apply personalization to HTML using HTMLRewriter
   async function applyPersonalizationWithHTMLRewriter(response, { fragments, commands }, url) {
@@ -701,6 +1017,7 @@ addEventListener("fetch", (event) => {
 		fragments.map(async (fragment) => {
 		  try {
 			const content = await fetchFragmentContent(fragment.val, url)
+			console.log("Apply Pers HTML Rewriter:", content);
 			fragmentContentMap.set(fragment.selector, content)
 		  } catch (error) {
 			console.error(`Error fetching fragment ${fragment.selector}:`, error)
@@ -725,6 +1042,7 @@ addEventListener("fetch", (event) => {
 	  fragments.forEach((fragment) => {
 		if (fragmentContentMap.has(fragment.selector)) {
 		  const fragmentContent = fragmentContentMap.get(fragment.selector)
+		  console.log("Fragment Content:", fragmentContent);
 		  const startCommentSelector = `!-- fragment ${fragment.selector} start --`
 		  
 		  rewriter = rewriter.on(startCommentSelector, {
@@ -735,16 +1053,20 @@ addEventListener("fetch", (event) => {
 		}
 	  })
 	  
+		// rewriter = rewriter.on(`#${command.selector}`, {
+
+		// any-marquee h1
 	  commands.forEach((command) => {
 		if (command.selectorType !== "fragment") {
 		  if (command.action === "replace") {
-			rewriter = rewriter.on(`#${command.selector}`, {
+			// rewriter = rewriter.on(`${command.selector}`, {
+			rewriter = rewriter.on(`[class*="marquee"] h1`, {
 			  element(element) {
 				element.setInnerContent(command.content, { html: true })
 			  }
 			})
 		  } else if (command.action === "remove") {
-			rewriter = rewriter.on(`#${command.selector}`, {
+			rewriter = rewriter.on(`[class*="marquee"] h1`, {
 			  element(element) {
 				element.remove()
 			  }
@@ -752,7 +1074,7 @@ addEventListener("fetch", (event) => {
 		  } else if (command.action === "updateattribute") {
 			try {
 			  const attrData = JSON.parse(command.content)
-			  rewriter = rewriter.on(`#${command.selector}`, {
+			  rewriter = rewriter.on(`[class*="marquee"] h1`, {
 				element(element) {
 				  Object.entries(attrData).forEach(([attrName, attrValue]) => {
 					element.setAttribute(attrName, attrValue)
@@ -767,12 +1089,15 @@ addEventListener("fetch", (event) => {
 	  })
 	  
 	  const transformedResponse = rewriter.transform(response)
+	  console.log("Transformed Response:", transformedResponse);
 	  
 	  const newHeaders = new Headers(transformedResponse.headers)
+	  console.log("New Headers:", newHeaders);
 	  Object.keys(corsHeaders).forEach(key => {
 		newHeaders.set(key, corsHeaders[key])
 	  })
 	  newHeaders.set("x-edge-personalized", "true")
+	  console.log("New Headers:", newHeaders);
 	  
 	  return new Response(transformedResponse.body, {
 		status: transformedResponse.status,
